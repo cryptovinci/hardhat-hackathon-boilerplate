@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useCallback, useState} from "react";
 
 // We'll use ethers to interact with the Ethereum network and our contract
 import { ethers } from "ethers";
@@ -18,6 +18,61 @@ import { Transfer } from "./Transfer";
 import { TransactionErrorMessage } from "./TransactionErrorMessage";
 import { WaitingForTransactionMessage } from "./WaitingForTransactionMessage";
 import { NoTokensMessage } from "./NoTokensMessage";
+import { Canvas } from '@react-three/fiber'
+import DefaultScene from "./Scene";
+
+export const Dapp = () => {
+  const [address, setAddress] = useState("");
+
+const connectWallet = useCallback(async() => {
+    // To connect to the user's wallet, we have to run this method.
+    // It returns a promise that will resolve to the user's address.
+    const [selectedAddress] = await window.ethereum.enable();
+  
+    // Once we have the address, we can initialize the application.
+  
+    setAddress(selectedAddress);
+  
+    // // We reinitialize it whenever the user changes their account.
+    // window.ethereum.on("accountsChanged", ([newAddress]) => {
+    //   this._stopPollingData();
+    //   // `accountsChanged` event can be triggered with an undefined newAddress.
+    //   // This happens when the user removes the Dapp from the "Connected
+    //   // list of sites allowed access to your addresses" (Metamask > Settings > Connections)
+    //   // To avoid errors, we reset the dapp state 
+    //   if (newAddress === undefined) {
+    //     return this._resetState();
+    //   }
+      
+    //   this._initialize(newAddress);
+    // });
+    
+    // // We reset the dapp state if the network is changed
+    // window.ethereum.on("networkChanged", ([networkId]) => {
+    //   this._stopPollingData();
+    //   this._resetState();
+    // });
+}, []);
+
+  if (window.ethereum === undefined) {
+    return <NoWalletDetected />;
+  }
+
+  if (!address) {
+    return (
+      <ConnectWallet 
+        connectWallet={connectWallet} 
+        networkError={undefined}
+        dismiss={() => {}}
+      />
+    );
+  }
+
+  return (
+    <div style={{height:1920, width:1920}}>
+  <DefaultScene />
+  </div>)
+}
 
 // This is the Hardhat Network id, you might change it in the hardhat.config.js
 // Here's a list of network ids https://docs.metamask.io/guide/ethereum-provider.html#properties
@@ -37,7 +92,7 @@ const ERROR_CODE_TX_REJECTED_BY_USER = 4001;
 // Note that (3) and (4) are specific of this sample application, but they show
 // you how to keep your Dapp and contract's state in sync,  and how to send a
 // transaction.
-export class Dapp extends React.Component {
+export class Dapp2 extends React.Component {
   constructor(props) {
     super(props);
 
